@@ -1,6 +1,6 @@
 # gb-tstl-utils
 
-A TypescriptToLua plugin providing various utility functions/methods.
+A TypescriptToLua plugin, by GlassBricks, providing various utility functions/methods.
 
 ## Installation
 
