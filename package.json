@@ -1,7 +1,6 @@
 {
-  "name": "tstl-utils",
+  "name": "gb-tstl-utils",
   "version": "1.0.0",
-  "private": "true",
   "license": "MIT",
   "packageManager": "yarn@3.3.0",
   "files": ["*.ts"],
