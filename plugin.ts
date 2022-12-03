@@ -62,7 +62,7 @@ export interface PluginOptions {
   name: string
   simplifyDelete?: boolean
   replaceDotWithDash?: boolean
-  warnUseNil?: true,
+  warnOnUseUndefined?: true,
   warnUseDoubleEquals: true,
 }
 
@@ -185,7 +185,7 @@ function createPlugin(options: PluginOptions): Plugin {
     [ts.SyntaxKind.Identifier](node: ts.Identifier, context: TransformationContext) {
       const symbol = context.checker.getSymbolAtLocation(node)
       if (symbol === nilSymbol) return createNilLiteral(node)
-      if (options.warnUseNil && node.originalKeywordKind === ts.SyntaxKind.UndefinedKeyword) {
+      if (options.warnOnUseUndefined && node.originalKeywordKind === ts.SyntaxKind.UndefinedKeyword) {
         context.diagnostics.push(useNilInstead(node))
       }
       return context.superTransformExpression(node)

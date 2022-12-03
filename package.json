@@ -20,6 +20,11 @@
     "typescript-to-lua": "^1.11.1",
     "typescript-tstl-plugin": "^0.3.2"
   },
+  "scripts": {
+    "build": "tstl -p tsconfig.json",
+    "test": "jest",
+    "prepublishOnly": "yarn build && yarn test"
+  },
   "peerDependencies": {
     "typescript-to-lua": "^1.10.1"
   }

@@ -29,7 +29,7 @@ export const setupPluginTest: TapCallback = (builder: TestBuilder) => {
         name: path.join(srcDir, "plugin.ts"),
         replaceDotWithDash: true,
         simplifyDelete: true,
-        warnUseNil: true,
+        warnOnUseUndefined: true,
         warnUseDoubleEquals: true,
       } satisfies PluginOptions,
     ],
