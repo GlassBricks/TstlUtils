@@ -11,12 +11,14 @@
 
 import path = require("path")
 import * as fs from "fs"
-import { LuaTarget } from "typescript-to-lua"
-import { TapCallback, TestBuilder } from "./tstl-test-util"
+import {LuaTarget} from "typescript-to-lua"
+import {TapCallback, TestBuilder} from "./tstl-test-util"
+import {PluginOptions} from "../extensions-plugin"
 
 const srcDir = path.resolve(__dirname, "..")
 
 let declFileContents: Record<string, string> | undefined
+
 function getDeclFileContents(): Record<string, string> {
   if (!declFileContents) {
     declFileContents = {}
@@ -36,8 +38,11 @@ export const setupPluginTest: TapCallback = (builder: TestBuilder) => {
     luaPlugins: [
       {
         name: path.join(srcDir, "extensions-plugin.ts"),
-        replaceDotWithDash: true
-      },
+        replaceDotWithDash: true,
+        simplifyDelete: true,
+        warnUseNil: true,
+        warnUseDoubleEquals: true,
+      } satisfies PluginOptions,
     ],
   })
   for (const [name, content] of Object.entries(getDeclFileContents())) {

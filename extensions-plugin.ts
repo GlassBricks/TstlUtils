@@ -69,8 +69,12 @@ const firstParamShouldBeRegex = createSerialDiagnosticFactory((node: ts.Node) =>
   category: ts.DiagnosticCategory.Error,
 }))
 
-interface PluginOptions {
+export interface PluginOptions {
+  name: string
+  simplifyDelete?: boolean
   replaceDotWithDash?: boolean
+  warnUseNil?: true,
+  warnUseDoubleEquals: true,
 }
 
 function transformLuaSetNewCall(context: TransformationContext, node: ts.CallExpression) {
@@ -172,23 +176,6 @@ function createPlugin(options: PluginOptions): Plugin {
   }
 
   const visitors: Visitors = {
-    [ts.SyntaxKind.DeleteExpression](node: ts.DeleteExpression, context: TransformationContext) {
-      if (ts.isOptionalChain(node.expression)) return context.superTransformExpression(node)
-      const deleteCall = context.superTransformExpression(node)
-      assert(isCallExpression(deleteCall))
-      // replace with set property to nil
-      const table = deleteCall.params[0]
-      const key = deleteCall.params[1]
-      context.addPrecedingStatements(
-        createAssignmentStatement(createTableIndexExpression(table, key), createNilLiteral(), node),
-      )
-      return createBooleanLiteral(true)
-    },
-    [ts.SyntaxKind.SourceFile](node, context) {
-      const [result] = context.superTransformNode(node) as [File]
-      context.usedLuaLibFeatures.delete(LuaLibFeature.Delete) // replaced by above
-      return result
-    },
     [ts.SyntaxKind.CallExpression](node: ts.CallExpression, context: TransformationContext) {
       // handle special case when call = __getTestFiles(), replace with list of files
       const callSymbol = context.checker.getSymbolAtLocation(node.expression)
@@ -209,38 +196,61 @@ function createPlugin(options: PluginOptions): Plugin {
     [ts.SyntaxKind.Identifier](node: ts.Identifier, context: TransformationContext) {
       const symbol = context.checker.getSymbolAtLocation(node)
       if (symbol === nilSymbol) return createNilLiteral(node)
-      if (node.originalKeywordKind === ts.SyntaxKind.UndefinedKeyword) {
+      if (options.warnUseNil && node.originalKeywordKind === ts.SyntaxKind.UndefinedKeyword) {
         context.diagnostics.push(useNilInstead(node))
       }
       return context.superTransformExpression(node)
     },
-    [ts.SyntaxKind.BinaryExpression](node: ts.BinaryExpression, context: TransformationContext) {
+  }
+  if (options.warnUseDoubleEquals) {
+    visitors[ts.SyntaxKind.BinaryExpression] = (node: ts.BinaryExpression, context: TransformationContext) => {
       if (node.operatorToken.kind === ts.SyntaxKind.EqualsEqualsEqualsToken) {
         context.diagnostics.push(useEqualsEquals(node))
       } else if (node.operatorToken.kind === ts.SyntaxKind.ExclamationEqualsEqualsToken) {
         context.diagnostics.push(useNotEquals(node))
       }
       return context.superTransformExpression(node)
-    },
+    }
+  }
+  if (options.simplifyDelete) {
+    visitors[ts.SyntaxKind.DeleteExpression] = (node: ts.DeleteExpression, context: TransformationContext) => {
+      if (ts.isOptionalChain(node.expression)) return context.superTransformExpression(node)
+      const deleteCall = context.superTransformExpression(node)
+      assert(isCallExpression(deleteCall))
+      // replace with set property to nil
+      const table = deleteCall.params[0]
+      const key = deleteCall.params[1]
+      context.addPrecedingStatements(
+        createAssignmentStatement(createTableIndexExpression(table, key), createNilLiteral(), node),
+      )
+      return createBooleanLiteral(true)
+    }
+    visitors[ts.SyntaxKind.SourceFile] = (node, context) => {
+      const [result] = context.superTransformNode(node) as [File]
+      context.usedLuaLibFeatures.delete(LuaLibFeature.Delete)
+      return result
+    }
+  }
+
+  const beforeEmit: Plugin["beforeEmit"] = (program, _, __, files) => {
+    if (options.replaceDotWithDash) {
+      if (files.length === 0) return
+      for (const file of files) {
+        const outPath = file.outputPath
+        if (!outPath.endsWith(".lua")) continue
+        const fileName = path.basename(outPath, ".lua")
+        // replace . with - in file name
+        const newFileName = fileName.replace(/\./g, "-")
+        if (fileName === newFileName) continue
+        file.outputPath = path.join(path.dirname(outPath), newFileName + ".lua")
+      }
+    }
   }
 
   return {
     beforeTransform,
     visitors,
-    beforeEmit(program, __, ___, files) {
-      if (options.replaceDotWithDash) {
-        if (files.length === 0) return
-        for (const file of files) {
-          const outPath = file.outputPath
-          if (!outPath.endsWith(".lua")) continue
-          const fileName = path.basename(outPath, ".lua")
-          // replace . with - in file name
-          const newFileName = fileName.replace(/\./g, "-")
-          if (fileName === newFileName) continue
-          file.outputPath = path.join(path.dirname(outPath), newFileName + ".lua")
-        }
-      }
-    },
+    beforeEmit,
   }
 }
 

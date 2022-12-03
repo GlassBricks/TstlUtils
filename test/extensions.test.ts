@@ -12,7 +12,7 @@
 import {setupPluginTest} from "./plugin-test-util"
 import {testExpression, testFunction, testModule} from "./tstl-test-util"
 
-test("testFiles", () => {
+test("getProjectFilesMatchingRegex", () => {
   testModule`
     export const result = getProjectFilesMatchingRegex(".*\\.test\\.ts")
   `
