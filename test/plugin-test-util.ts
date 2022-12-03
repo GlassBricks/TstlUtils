@@ -13,7 +13,7 @@ import path = require("path")
 import * as fs from "fs"
 import {LuaTarget} from "typescript-to-lua"
 import {TapCallback, TestBuilder} from "./tstl-test-util"
-import {PluginOptions} from "../extensions-plugin"
+import {PluginOptions} from "../plugin"
 
 const srcDir = path.resolve(__dirname, "..")
 
@@ -37,7 +37,7 @@ export const setupPluginTest: TapCallback = (builder: TestBuilder) => {
     luaTarget: LuaTarget.Lua52,
     luaPlugins: [
       {
-        name: path.join(srcDir, "extensions-plugin.ts"),
+        name: path.join(srcDir, "plugin.ts"),
         replaceDotWithDash: true,
         simplifyDelete: true,
         warnUseNil: true,

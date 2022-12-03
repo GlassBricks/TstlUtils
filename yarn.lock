@@ -1746,6 +1746,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"gb-tstl-utils@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "gb-tstl-utils@workspace:."
+  dependencies:
+    "@types/jest": ^29.2.3
+    "@types/node": ^18.11.10
+    javascript-stringify: ^2.1.0
+    jest: ^29.3.1
+    lua-types: ^2.13.1
+    lua-wasm-bindings: ^0.3.1
+    pretty-format: ^29.3.1
+    ts-jest: ^29.0.3
+    ts-node: ^10.9.1
+    typescript: ~4.9.3
+    typescript-to-lua: ^1.11.1
+    typescript-tstl-plugin: ^0.3.2
+  peerDependencies:
+    typescript-to-lua: ^1.10.1
+  languageName: unknown
+  linkType: soft
+
 "gensync@npm:^1.0.0-beta.2":
   version: 1.0.0-beta.2
   resolution: "gensync@npm:1.0.0-beta.2"
@@ -3606,25 +3627,6 @@ __metadata:
   checksum: dbe628ef87f66691d5d2959b3e41b9ca0045c3ee3c7c7b906cc1e328b39f199bb1ad9e671c39025bd56122ac57dfbf7385a94843b1cc07c60a4db74795829acd
   languageName: node
   linkType: hard
-
-"tstl-utils@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "tstl-utils@workspace:."
-  dependencies:
-    "@types/jest": ^29.2.3
-    "@types/node": ^18.11.10
-    javascript-stringify: ^2.1.0
-    jest: ^29.3.1
-    lua-types: ^2.13.1
-    lua-wasm-bindings: ^0.3.1
-    pretty-format: ^29.3.1
-    ts-jest: ^29.0.3
-    ts-node: ^10.9.1
-    typescript: ~4.9.3
-    typescript-to-lua: ^1.11.1
-    typescript-tstl-plugin: ^0.3.2
-  languageName: unknown
-  linkType: soft
 
 "type-detect@npm:4.0.8":
   version: 4.0.8
