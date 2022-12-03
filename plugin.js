@@ -145,7 +145,7 @@ function createPlugin(options) {
             const symbol = context.checker.getSymbolAtLocation(node);
             if (symbol === nilSymbol)
                 return (0, typescript_to_lua_1.createNilLiteral)(node);
-            if (options.warnUseNil && node.originalKeywordKind === ts.SyntaxKind.UndefinedKeyword) {
+            if (options.warnOnUseUndefined && node.originalKeywordKind === ts.SyntaxKind.UndefinedKeyword) {
                 context.diagnostics.push(useNilInstead(node));
             }
             return context.superTransformExpression(node);

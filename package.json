@@ -21,8 +21,8 @@
     "typescript-tstl-plugin": "^0.3.2"
   },
   "scripts": {
-    "build": "tstl -p tsconfig.json",
-    "test": "jest",
+    "build": "tsc -p tsconfig.json",
+    "test": "jest -c test/jest.config.js",
     "prepublishOnly": "yarn build && yarn test"
   },
   "peerDependencies": {
